@@ -1,0 +1,19 @@
+###Build stage
+FROM gradle:8.11.1-jdk17 AS builder
+
+COPY . /home/gradle/project
+
+WORKDIR /home/gradle/project
+
+RUN gradle bootJar
+
+###Package stage
+FROM registry.access.redhat.com/ubi8/openjdk-17
+
+USER jboss:jboss
+
+EXPOSE 7879
+
+COPY --from=builder /home/gradle/project/build/libs/*.jar /deployments/app.jar
+
+CMD ["java","-jar","/deployments/app.jar"]
