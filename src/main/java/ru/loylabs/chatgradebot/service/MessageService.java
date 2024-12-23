@@ -8,13 +8,18 @@ import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.methods.botapimethods.BotApiMethodMessage;
 import org.telegram.telegrambots.meta.api.methods.polls.SendPoll;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+import org.telegram.telegrambots.meta.api.objects.ChatMemberUpdated;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import ru.loylabs.chatgradebot.config.BotConfig;
 
 import java.time.Instant;
 import java.util.List;
+import java.util.Random;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import static ru.loylabs.chatgradebot.consts.Stringi.QUESTIONS;
+import static ru.loylabs.chatgradebot.consts.Stringi.SANYA_IS;
 
 @Service
 @RequiredArgsConstructor
@@ -37,11 +42,32 @@ public class MessageService {
             return null;
         }
 
+        if (update.hasChatMember()) {
+            ChatMemberUpdated chatMemberUpdated = update.getChatMember();
+            if (chatMemberUpdated.getNewChatMember().getStatus().equals("left")) {
+                sendMessage(chatId, "Съебался слабый, помянем");
+            }
+        }
+
         if (update.getMessage().hasText() && !update.getMessage().hasVideo()) {
             String messageText = update.getMessage().getText();
 
             if (messageText.equalsIgnoreCase("Саня")) {
-                return sendMessage(chatId, "Пидор");
+                int randomIndex = new Random().nextInt(SANYA_IS.size());
+                String sanus = SANYA_IS.get(randomIndex);
+                return sendMessage(chatId, sanus);
+            }
+
+            if (messageText.equalsIgnoreCase("Опрос")) {
+                return sendPoll(chatId);
+            }
+
+            if (messageText.toLowerCase().contains("никита")) {
+                return sendMessage(chatId, "Легенда упомянут");
+            }
+
+            if (checkQuestion(messageText)) {
+                return sendMessage(chatId, "А тебя это ебать не должно");
             }
 
             if (update.getMessage().getFrom().getId().equals(Long.parseLong(botConfig.getLovelyUser()))) {
@@ -88,6 +114,12 @@ public class MessageService {
         ));
         poll.setIsAnonymous(false);
         return poll;
+    }
+
+    private boolean checkQuestion(String text) {
+        return QUESTIONS.stream().anyMatch(s -> text.toLowerCase().startsWith(s.toLowerCase())
+                || text.toLowerCase().endsWith(s.toLowerCase() + "?")
+                || text.toLowerCase().endsWith(s.toLowerCase()));
     }
 
     @Scheduled(fixedRate = 3 * 60 * 60 * 1000)

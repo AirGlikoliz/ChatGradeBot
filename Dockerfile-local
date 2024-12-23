@@ -12,7 +12,7 @@ FROM registry.access.redhat.com/ubi8/openjdk-17
 
 USER jboss:jboss
 
-EXPOSE 7879
+EXPOSE 8080
 
 COPY --from=builder /home/gradle/project/build/libs/*.jar /deployments/app.jar
 
