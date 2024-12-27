@@ -52,6 +52,10 @@ public class MessageService {
         if (update.getMessage().hasText() && !update.getMessage().hasVideo()) {
             String messageText = update.getMessage().getText();
 
+            if (containsLink(messageText)) {
+                return sendPoll(chatId);
+            }
+
             if (messageText.equalsIgnoreCase("Саня")) {
                 int randomIndex = new Random().nextInt(SANYA_IS.size());
                 String sanus = SANYA_IS.get(randomIndex);
@@ -62,7 +66,7 @@ public class MessageService {
                 return sendPoll(chatId);
             }
 
-            if (messageText.toLowerCase().contains("никита")) {
+            if (messageText.toLowerCase().contains("никит")) {
                 return sendMessage(chatId, "Легенда упомянут");
             }
 
@@ -78,9 +82,6 @@ public class MessageService {
                 countRetry++;
             }
 
-            if (containsLink(messageText)) {
-                return sendPoll(chatId);
-            }
         } else if (update.getMessage().hasVideo()) {
             return sendPoll(chatId);
         }
