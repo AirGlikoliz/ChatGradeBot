@@ -14,4 +14,7 @@ public class BotConfig {
     String token;
     @Value("${user.userid}")
     String lovelyUser;
+    @Value("${user.userid.second}")
+    String lovelyUserSecond;
+
 }

@@ -1,3 +1,5 @@
+git pull origin
+
 kill -9 "$(lsof -t -i :8080 -s TCP:LISTEN)"
 
 rm nohup.out
