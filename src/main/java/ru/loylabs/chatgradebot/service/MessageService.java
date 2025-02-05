@@ -113,22 +113,17 @@ public class MessageService {
             return sendMessage(chatId, "Бабкин, хочу в основу");
         }
 
-        if (countRetrySviat == 4) {
-            countRetrySviat++;
-            return sendMessage(chatId, "похуй");
-        }
-
-        if (countRetrySviat == 5) {
+        if (countRetrySviat == 7) {
             countRetrySviat++;
             return sendMessage(chatId, "ваще похую");
         }
 
-        if (countRetrySviat == 6) {
+        if (countRetrySviat == 9) {
             countRetrySviat++;
             return sendMessage(chatId, "да всем похуй");
         }
 
-        if (countRetrySviat == 7) {
+        if (countRetrySviat == 14) {
             countRetrySviat = 0;
             return sendMessage(chatId, "БОЖЕ, ДА ЗАВАЛИ ЕБАЛО, НИКОМУ НЕ ИНТЕРЕСНО, ХВАТИТ ФЛУДИТЬ, ЛЮБЛЮ ТЕБЯ");
         }
