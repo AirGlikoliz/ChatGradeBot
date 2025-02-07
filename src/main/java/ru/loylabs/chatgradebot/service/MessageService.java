@@ -169,7 +169,7 @@ public class MessageService {
                 || text.toLowerCase().endsWith(s.toLowerCase()));
     }
 
-    @Scheduled(fixedRate = 3 * 60 * 60 * 1000)
+    @Scheduled(fixedRate = 60 * 60 * 1000)
     private void updateCount() {
         countRetry = 0;
         countRetrySviat = 0;

@@ -1,6 +1,8 @@
 package ru.loylabs.chatgradebot.message;
 
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
@@ -11,18 +13,21 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import ru.loylabs.chatgradebot.config.BotConfig;
 import ru.loylabs.chatgradebot.service.MessageService;
 
+import java.time.Instant;
 import java.util.Random;
 
 import static ru.loylabs.chatgradebot.consts.Stringi.PARNI;
+import static ru.loylabs.chatgradebot.consts.Stringi.SILENCE;
 
 @Component
 @RequiredArgsConstructor
 public class Receiver extends TelegramLongPollingBot {
 
+    private static final Logger log = LoggerFactory.getLogger(Receiver.class);
     private final MessageService messageService;
     private final BotConfig botConfig;
     private long chatId;
-
+    long messageLastTime = 0;
 
     @Override
     public String getBotUsername() {
@@ -37,6 +42,7 @@ public class Receiver extends TelegramLongPollingBot {
     @Override
     public void onUpdateReceived(Update update) {
         chatId = update.getMessage().getChatId();
+        messageLastTime = update.getMessage().getDate();
         var response = messageService.mapperResponse(update);
         sendResponse(response);
     }
@@ -57,6 +63,19 @@ public class Receiver extends TelegramLongPollingBot {
         message.setChatId(String.valueOf(chatId));
         message.setText(pp);
         sendResponse(message);
+    }
+
+    @Scheduled(fixedRate = 15 * 60 * 1000)
+    private void updateCount() {
+        long diff = Instant.now().getEpochSecond() - messageLastTime;
+        if (diff >= 54000) {
+            int randomIndex = new Random().nextInt(SILENCE.size());
+            String pp = SILENCE.get(randomIndex);
+            SendMessage message = new SendMessage();
+            message.setChatId(String.valueOf(chatId));
+            message.setText(pp);
+            sendResponse(message);
+        }
     }
 
 
