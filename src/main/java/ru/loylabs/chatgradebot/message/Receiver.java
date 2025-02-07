@@ -69,6 +69,7 @@ public class Receiver extends TelegramLongPollingBot {
     private void updateCount() {
         long diff = Instant.now().getEpochSecond() - messageLastTime;
         if (diff >= 54000) {
+            messageLastTime = 0;
             int randomIndex = new Random().nextInt(SILENCE.size());
             String pp = SILENCE.get(randomIndex);
             SendMessage message = new SendMessage();
